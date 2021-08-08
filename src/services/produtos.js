@@ -16,5 +16,10 @@ export default{
 
     deletar:(id)  =>{
         return http.delete(`delete/${id}`, {data: id})
+    },
+
+
+    pesquisar:(name) => {
+        return http.get(`search/${name}`, {data: name})
     }
 }

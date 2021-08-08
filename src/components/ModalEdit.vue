@@ -4,7 +4,7 @@
     <div class="cont">
         <span><strong>Detalhe do Produto</strong> </span> 
         <div class="form">
-          <form @submit.prevent="salvar">
+          <form @submit.prevent="atualizar">
             
               <div class="inputName">
                   <label>Nome</label><br>
@@ -30,16 +30,16 @@
 
               <div class="radio">
                 <label >Categoria</label><br>
-                <input type="radio" id="CATEGORIA1" value="CATEGORIA1" v-model="produto.categoria">
+                <input type="radio"  value="CATEGORIA1" v-model="produto.categoria">
                 <label for="CATEGORIA1">Categoria 1</label>
 
-                <input type="radio" id="CATEGORIA2"  value="CATEGORIA2" v-model="produto.categoria">
+                <input type="radio" value="CATEGORIA2" v-model="produto.categoria">
                 <label for="CATEGORIA2">Categoria 2</label><br>
                 
-                <input type="radio" id="CATEGORIA3" value="CATEGORIA3" v-model="produto.categoria">
+                <input type="radio"  value="CATEGORIA3" v-model="produto.categoria">
                 <label for="CATEGORIA3">Categoria 3</label>
 
-                <input type="radio" id="CATEGORIA4" value="CATEGORIA4" v-model="produto.categoria">
+                <input type="radio"  value="CATEGORIA4" v-model="produto.categoria">
                 <label for="CATEGORIA4">Categoria 4</label>
               </div>  
     
@@ -48,7 +48,7 @@
                 <label id="lbPreco">Preço</label>
                 <label id="labelQtd">Quantidade</label><br>
                 <input type="number" v-model="produto.price" step="0.01"  min="0" >
-                <input id = "inputQtd" type="number">
+                <input  type="number">
               </div> 
             <div class="btnModal">
               
@@ -66,8 +66,10 @@
 import Produto from '../services/produtos'
 
 export default {
-    name: "Modal",
-    props: ['produtose'],
+    /* name: "Modal",
+     props:{
+      id:
+    }, */
     
     data(){
     return{
@@ -85,25 +87,17 @@ export default {
     }
   },
   methods:{
-        async salvar(){
-          if(this.produto.name != '' || this.produto.categoria != '' || this.produto.status != '' || this.produto.price > 0){
-          await Produto.salvar(this.produto).then(response =>{
+   async atualizar(){
+         await Produto.atualizar(this.produto).then(response =>{
             console.log(response)
             this.produto = {} 
-            alert("Salvo com Sucesso")
-            window.location.reload();
+            alert("Atualizado com Sucesso")
             this.listar() 
           }).catch((error)=>{
-            alert('Nenhum Campo pode ser nulo' + error)
+            alert('gerou erro:' + error)
             console.log(this.produto)
-          })
-          
-           }else{
-            this.produto = console.log(this.produto)
-            alert('Nenhum campo pode ser nulo') //fazer validação no back
-          }  
-          
-    },
+          }) 
+    },      
 
     
     async listar(){
@@ -193,14 +187,14 @@ select{
 
 }
 
-#CATEGORIA2{
+#CATEGORIA22{
   margin-left: 30%;
   margin-bottom: 12px;
   margin-top: 12px;
 
 }
 
-#CATEGORIA4{
+#CATEGORIA44{
   margin-left: 30%;
 
 }

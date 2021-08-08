@@ -1,8 +1,7 @@
 <template>
   <div id = "home">
-      <h2>Estoque de produtos</h2>
-    
-    
+    <h2>Estoque de Produtos</h2>
+
     <div class="total">
       <div id="addEx">
         <button @click="modal(produto)"  class="btnSave"> <strong> +</strong> Novo </button>
@@ -12,11 +11,9 @@
       <div id="procurar" >
           <h3>Gerenciar Produto</h3>
           
-          
-
           <div class="dois">
             <input type="text" placeholder="Nome do Produto..." v-model="produto.name">
-            <button class="btnPesquisar"><i class="fa fa-search"></i>Pesquisar</button> <!-- Aqui vai ter um @click = pesquisar por nome -->
+            <button  @click="pesquisar(produto.name)" class="btnPesquisar" ><i class="fa fa-search"></i>Pesquisar</button> <!-- Aqui vai ter um @click = pesquisar por nome -->
           </div>
       </div>
    
@@ -26,6 +23,10 @@
         <Modal v-if="showPostModal" :produto =  "fullPost" @close ="modal('hide')"> 
           
         </Modal>
+
+        <Modal-Edit v-if = "showPostModalEdit" :produto = "fullPostEdit" @close = "modalEdit('hide')" :id="produto.Id">
+
+        </Modal-Edit>
 
         <Modal-Delete v-if="showPostModalDelete" @close = "abrirModalDel('hide')" :excluir = "produto.id" :toglle="abrirModalDel" :produto="produto" :name="produto.name"> <!-- mudar nome do modal -->
 
@@ -39,10 +40,10 @@
               <tr> <!--  Tem que ter uma ordenação aqui -->
                 <th>Id </th> 
                 <th>Código</th> 
-                <th>Nome </th>
-                <th>Preço </th>
+                <th>Nome</th>
+                <th>Preço</th>
                 <th>Categoria</th>
-                <th>Status </th>
+                <th>Status</th>
                 <th>Opções</th>
               </tr>
 
@@ -53,19 +54,17 @@
               <tr v-for="produto in produtos" :key="produto.id">
                 
                 <input type= "checkbox"  :v-model="produto.id" > 
-                <td>{{produto.cod}}</td>
+                <td >{{produto.cod}}</td>
                 <td>{{produto.name}}</td>
-                <td>$ {{produto.price}}</td>
+                <td>$ {{produto.price}}.00</td> <!-- Modo estatico -->
                 <td>{{produto.categoria}}</td>
                 <td>{{produto.status}}</td>
                 
                 <td class = "btnTable">
-                  <button @click="editar(produto)" class="btnAtualizar"><i class="material-icons">create</i></button> <!-- Quando clicar nesse botao tem que abrir um modal -->
+                  <button @click="modalEdit(produto)" class="btnAtualizar"><i class="material-icons">create</i></button> <!-- Quando clicar nesse botao tem que abrir um modal -->
                   <!-- <button @click="abrirModalDel(produto.id)"  class="btnDeletarOne"><i class="material-icons">delete_sweep</i></button> -->
                   <button @click="excluir(produto.id)"  class="btnDeletarOne"><i class="material-icons">delete_sweep</i></button> 
-                </td>
-                
-
+                </td> 
               </tr>
 
             </tbody>
@@ -81,6 +80,7 @@
 import Produto from '../services/produtos'
 import Modal from '../components/Modal.vue'
 import ModalDelete from '../components/ModalDelete.vue'
+import ModalEdit from '../components/ModalEdit.vue' 
  
 export default {
     name:
@@ -88,16 +88,19 @@ export default {
     components:{
         Modal,
         ModalDelete,
+        ModalEdit, 
              
     },
 data(){
     return{
       showPostModal: false,
+      showPostModalEdit:false,
       showPostModalDelete: false,
       toggleModalDelete:{
         
       },
       fullPost:{},
+      fullPostEdit:{},
       produto:{
         id: '',
         name: '',
@@ -105,10 +108,7 @@ data(){
         cod: '',
         categoria: '',
         status: ''
-        
-        
-        //descricao: '',
-        //quantidade: '',
+    
       },
       produtos: [],
     }
@@ -117,8 +117,14 @@ data(){
   mounted(){
     this.listar()
   },
-  
+
   methods:{
+
+    /* randomCod (c){
+       this.produto.cod = c;  
+       c = Math.random().toString(36).substring(2); 
+      
+    }, */
     //mostra minha tabela
     async listar(){
       await Produto.listar().then(response =>{
@@ -126,9 +132,10 @@ data(){
       this.produtos = response.data;
       })
     },
-    //salva o objeto na tabela
+    
+    //isso tem que estar somente no modal
     async salvar(){
-          if(this.produto.name === "" && this.produto.categoria === '' && this.produto.status === '' && this.produto.price>0){
+          if(!(this.produto.name === "" && this.produto.categoria === '' && this.produto.status === '' && this.produto.price>0)){
             await Produto.salvar(this.produto).then(response =>{
               console.log(response)
               this.produto = {} 
@@ -152,23 +159,28 @@ data(){
           }).catch((error)=>{
             alert('gerou erro:' + error)
           }) 
-        
-
     },
 
-    editar(produto){
-      this.produto = produto
-      
+   
+
+    async pesquisar(name){ // pesquisar por nome
+        await Produto.pesquisar(name).then(response =>{
+          
+           this.produtos = response.data;
+           console.log(response.data)
+           this.listar();
+           
+          }).catch((error) =>{
+              alert('Não tem produtos com esse nome' + error)
+          })
     },
 
-     async excluir(id){
+    async excluir(id){
       
       if(confirm('Você deseja Realmente excluir o produto ' + "?"))
-      await Produto.deletar(id).then(response =>{
-        console.log(response)
-        this.listar();
-        
-        
+        await Produto.deletar(id).then(response =>{
+          console.log(response)
+          this.listar();
       }).catch((error) =>{
         alert('Não foi possivel deletar' + error)
       })
@@ -185,6 +197,16 @@ data(){
       }
     },
 
+     modalEdit(produto){
+      this.showPostModalEdit = !this.showPostModalEdit
+      produto = true
+      if(this.showPostModalEdit){
+        this.fullPostEdit = produto.name;
+      }else{
+        this.fullPostEdit = this.produto
+      }
+    }, 
+
     abrirModalDel(produto){
       this.showPostModalDelete = !this.showPostModalDelete
 
@@ -198,15 +220,7 @@ data(){
   }
 }
 
-
-
 </script>
-
-
-
-<style scoped>
-
-</style>
 
 <style scoped>
 
@@ -224,8 +238,6 @@ data(){
   padding: 10px;
   width: 70%;
 }
-
-
 
 #addEx {
   margin: 5px;
@@ -277,17 +289,15 @@ button{
   height: 50%;
   padding: 10px 10px; 
   align-items: center;
-  
-  
+   
 }
-
-
 
 #procurar input{
   border: none;
   border-radius: 5px;
   height: 30px;
   width: 110px;
+  margin-left: 150px;
   
 }
 
