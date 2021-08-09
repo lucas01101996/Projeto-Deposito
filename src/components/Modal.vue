@@ -69,7 +69,7 @@ export default {
     name: "Modal",
     props: ['produtose'],
     
-    data(){
+    data(){ //excluir isso
     return{
       
       produto:{
@@ -87,31 +87,23 @@ export default {
   methods:{
         async salvar(){
           if(this.produto.name != '' || this.produto.categoria != '' || this.produto.status != '' || this.produto.price > 0){
-          await Produto.salvar(this.produto).then(response =>{
-            console.log(response)
-            this.produto = {} 
-            alert("Salvo com Sucesso")
-            window.location.reload();
-            this.listar() 
-          }).catch((error)=>{
-            alert('Nenhum Campo pode ser nulo' + error)
-            console.log(this.produto)
-          })
+            await Produto.salvar(this.produto).then(response =>{
+              console.log(response)
+              this.produto = {} 
+              alert("Salvo com Sucesso")
+              window.location.reload();
+              this.listar() 
+            }).catch((error)=>{
+              alert('Nenhum Campo pode ser nulo' + error)
+              console.log(this.produto)
+            })
           
            }else{
             this.produto = console.log(this.produto)
-            alert('Nenhum campo pode ser nulo') //fazer validação no back
+            alert('Nenhum campo pode ser nuloasd') //fazer validação no back
           }  
           
-    },
-
-    
-    async listar(){
-      await Produto.listar().then(response =>{
-      
-      this.produtos = response.data;
-      })
-    },
+        },  
   }
         
 }
