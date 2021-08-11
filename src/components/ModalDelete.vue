@@ -18,57 +18,21 @@ import Produto from '../services/produtos'
 
 export default {
     name: "ModalDelete",
-    props:[
-        'delete',
-        'toglle',
-        'ids',
-        'productName'
-    ],
+    props:['produto', 'produtos'],
     
-    data(){
-    return{
-      
-       produto: {
-        id: '',
-        //descricao: '',
-        //quantidade: '',
-      }, 
-      produtos: [], 
-      
-    }
-  },
    methods:{
+       async excluir(id){ //esse tem que ficar no modal de excluir
       
+            if(confirm('Você deseja Realmente excluir o produto ' + "?"))
+                await Produto.deletar(id).then(response =>{
+                console.log(response)
+                this.listar();
+            }).catch((error) =>{
+                alert('Não foi possivel deletar' + error)
+            })
+        }, 
 
-    async  excluir(id){
-      console.log(id)
-      
-      
-      
-      await Produto.deletar(id).then(response =>{
-        this.produtos = response.deletar
-        window.location.reload();
-        this.listar();
-        console.log(response)
-        
-        
-        
-      }).catch((error) =>{
-        alert('Não foi possivel deletar' + error + this.produto)
-      })
-    },
-   /*  async listar(){
-      await Produto.listar().then(response =>{
-      
-      this.produtos = response.data;
-      })
-    }, */
-    async listar(){
-      await Produto.listar().then(response =>{
-      
-      this.produtos = response.data;
-      })
-    },
+   
        
          
   }      

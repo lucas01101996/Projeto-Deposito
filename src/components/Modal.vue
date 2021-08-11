@@ -52,7 +52,7 @@
               </div> 
             <div class="btnModal">
               
-              <button @click="$emit(`close`)" class= "close">Voltar</button>
+              <button @click="$emit(`close`)" class= "close">XCancelar</button>
               <button class="salvarModal">  +Salvar </button> 
             </div>  
           </form>  
@@ -67,23 +67,8 @@ import Produto from '../services/produtos'
 
 export default {
     name: "Modal",
-    props: ['produtose'],
-    
-    data(){ //excluir isso
-    return{
-      
-      produto:{
-        id: '',
-        name: '',
-        price: '',
-        cod: '',
-        categoria: '',
-        status: ''
-      },
-      produtos: [],
-      
-    }
-  },
+    props: ['produto', 'produtos', 'listar'],
+
   methods:{
         async salvar(){
           if(this.produto.name != '' || this.produto.categoria != '' || this.produto.status != '' || this.produto.price > 0){
@@ -99,8 +84,7 @@ export default {
             })
           
            }else{
-            this.produto = console.log(this.produto)
-            alert('Nenhum campo pode ser nuloasd') //fazer validação no back
+            alert('Nenhum campo pode ser nulo') //fazer validação no back
           }  
           
         },  

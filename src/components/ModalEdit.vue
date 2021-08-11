@@ -5,6 +5,8 @@
         <span><strong>Detalhe do Produto</strong> </span> 
         <div class="form">
           <form @submit.prevent="atualizar">
+
+            <input type="number" v-model="produto.id">
             
               <div class="inputName">
                   <label>Nome</label><br>
@@ -66,28 +68,12 @@
 import Produto from '../services/produtos'
 
 export default {
-    /* name: "Modal",
-     props:{
-      id:
-    }, */
+  props:['produto', 'produtos', 'produto.id','editar'],
+  
     
-    data(){
-    return{
-      
-      produto:{
-        id: '',
-        name: '',
-        price: '',
-        cod: '',
-        categoria: '',
-        status: ''
-      },
-      produtos: [],
-      
-    }
-  },
   methods:{
    async atualizar(){
+        
          await Produto.atualizar(this.produto).then(response =>{
             console.log(response)
             this.produto = {} 
@@ -96,16 +82,9 @@ export default {
           }).catch((error)=>{
             alert('gerou erro:' + error)
             console.log(this.produto)
+            console.log(this.editar)
           }) 
-    },      
-
-    
-    async listar(){
-      await Produto.listar().then(response =>{
-      
-      this.produtos = response.data;
-      })
-    },
+    }
   }
         
 }

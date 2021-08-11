@@ -1,11 +1,11 @@
 <template>
 <div id="table">
 
-    <Modal-Edit v-if = "showPostModalEdit" :produto = "fullPostEdit" @close = "modalEdit('hide')" :id="produto.Id">
+    <Modal-Edit v-if ="showPostModalEdit" :produto ="produto" :produtos="produtos" :id="produto.id" :editar='editar' @close ="modalEdit('hide')">
 
     </Modal-Edit>
 
-    <Modal-Delete v-if="showPostModalDelete" @close = "abrirModalDel('hide')" :excluir = "produto.id" :toglle="abrirModalDel" :produto="produto" :name="produto.name"> <!-- mudar nome do modal -->
+    <Modal-Delete v-if="showPostModalDelete" @close = "abrirModalDel('hide')" :produto='produto' :produtos='produtos' :toglle="abrirModalDel" :name="produto.name" :excluir='excluir'> <!-- mudar nome do modal -->
 
     </Modal-Delete>
 
@@ -15,7 +15,7 @@
             <thead>
 
               <tr> <!--  Tem que ter uma ordenação aqui -->
-                <th>Id</th> 
+                <th></th> 
                 <th>Código</th> 
                 <th>Nome</th>
                 <th>Preço</th>
@@ -68,39 +68,26 @@ export default {
         ModalEdit,
     },
 
+    props:['produto','produtos', 'listar'],
+
     data(){
         return{
             showPostModalEdit:false,
             showPostModalDelete: false,
             toggleModalDelete:{
-        
             },
             fullPostEdit:{},
-            produto:{
-                id: '',
-                name: '',
-                price: '',
-                cod: '',
-                categoria: '',
-                status: ''
-            },
-            produtos: [],
+            
+           /*  produtosDaTabela:{ uma ideia jogar os dados que estao na tabela armazenar em um array e passar para os modals
+                prod: 'produtos'
+            } */
         }
 
     },
 
-    mounted(){
-    this.listar()
-  },
+ 
 
     methods:{
-        async listar(){
-            await Produto.listar().then(response =>{
-            
-            this.produtos = response.data;
-            })
-        },
-
         async excluir(id){ //esse tem que ficar no modal de excluir
       
             if(confirm('Você deseja Realmente excluir o produto ' + "?"))
@@ -131,6 +118,10 @@ export default {
             }else{
                 this.toggleModalDelete = {}
             }
+        },
+        editar(produto){
+            this.produto = produto;
+            console.log(produto)
         }
 
     }
@@ -139,13 +130,11 @@ export default {
 
 <style scoped>
 
-/* Enviar para o component de table */
 #AllTabela{
   margin: 10px;
   padding: 10px;
   
 }
-
 
 table {
   width: 100%;
@@ -171,8 +160,9 @@ table th{
 
 .btnTable button{
   color: white;
-  border-radius: 60px;
+  border-radius: 65px;
   border: 0;
+  cursor: pointer;
 }
 
 .btnTable i{
@@ -184,8 +174,15 @@ table th{
 }
 
 .btnDeletarOne{
-  color:black;
   background: #bdc019;
+}
+
+.btnAtualizar:hover{
+  background-color:#57e057;
+}
+
+.btnDeletarOne:hover{
+  background: #e5e909;
 }
 
 </style>

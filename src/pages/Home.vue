@@ -19,11 +19,11 @@
        
       <div class="container">
         <!-- Fazer um model aqui -->
-        <Modal v-if="showPostModal" :produto =  "fullPost" @close ="modal('hide')"> 
+        <Modal v-if="showPostModal" :produto ="produto" :produtos="produtos" :fullPost='fullPost' :listar='listar' @close ="modal('hide')"> 
           
         </Modal>
 
-        <Table></Table> 
+        <Table :produto ="produto" :produtos ="produtos" :listar="listar"  ></Table> 
         
       </div>
 
@@ -46,6 +46,7 @@ export default {
         Modal,
         Table,        
     },
+    
 data(){
     return{
       showPostModal: false,
@@ -64,7 +65,17 @@ data(){
     }
   },
 
+  mounted(){
+    this.listar()
+  },
+
   methods:{
+     async listar(){
+            await Produto.listar().then(response =>{
+            
+            this.produtos = response.data;
+            })
+        },
     async pesquisar(name){ // pesquisar por nome
         await Produto.pesquisar(name).then(response =>{
           
