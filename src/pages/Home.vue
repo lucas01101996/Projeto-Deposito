@@ -5,7 +5,7 @@
     <div class="total">
       <div id="addEx">
         <button @click="modal(produto)"  class="btnSave"> <strong> +</strong> Novo </button>
-        <button   class="btnExcluirAll"><i class="fa fa-trash"></i>Excluir</button>
+        <button class="btnExcluirAll"><i class="fa fa-trash"></i>Excluir</button>
       </div>
 
       <div id="procurar" >
@@ -19,11 +19,11 @@
        
       <div class="container">
         <!-- Fazer um model aqui -->
-        <Modal v-if="showPostModal" :produto ="produto" :produtos="produtos" :fullPost='fullPost' :listar='listar' @close ="modal('hide')"> 
+        <Modal v-if="showPostModal" :produto ="produto" :produtos="produtos" :fullPost='fullPost' :listar='listar' :salvar='salvar' @close ="modal('hide')"> 
           
         </Modal>
 
-        <Table :produto ="produto" :produtos ="produtos" :listar="listar"  ></Table> 
+        <Table :produto ="produto" :produtos ="produtos" :listar="listar" :salvar='salvar' :atualizar="atualizar"></Table> 
         
       </div>
 
@@ -34,7 +34,7 @@
    
 <script>
 
-import Produto from '../services/produtos'
+import ProdutoApi from '../services/produtos'
 import Modal from '../components/Modal.vue'
 import Table from '../components/Table.vue'
  
@@ -61,7 +61,12 @@ data(){
         status: ''
       },
       produtos: [],
-      
+    }
+  },
+  watch:{
+    name(novo,antigo){
+      console.log(novo);
+      console.log(antigo)
     }
   },
 
@@ -70,18 +75,44 @@ data(){
   },
 
   methods:{
-     async listar(){
-            await Produto.listar().then(response =>{
-            
+      async atualizar(){
+
+         await ProdutoApi.atualizar(this.produto).then(response =>{ 
+            console.log(response)
+            this.produto= {}
+            alert("Atualizado com Sucesso")
+            /* window.location.reload(); */
+          }).catch((error)=>{
+            alert('nao ta entrando' + error)
+            console.log(this.produto)
+          }) 
+      },
+      async salvar(){
+          console.log(this.produto +'antes de entraar no salvar')
+          if(this.produto.name != '' || this.produto.categoria != '' || this.produto.status != '' || this.produto.price >= 0){
+            await ProdutoApi.salvar(this.produto).then(response =>{
+            console.log(response)  
+            alert("Salvo com Sucesso")
+         
+            }).catch((error)=>{
+              alert('Nenhum Campo pode ser nulo' + error)
+              console.log(this.produto)
+            })
+          
+           }else{
+            alert('Nenhum campo pode ser nulo') //fazer validação no back
+          }  
+          
+        },  
+      async listar(){
+          await ProdutoApi.listar().then(response =>{
+            console.log(response.data)
             this.produtos = response.data;
             })
         },
-    async pesquisar(name){ // pesquisar por nome
-        await Produto.pesquisar(name).then(response =>{
-          
-           this.produtos = response.data;
-           console.log(response.data)
-           this.listar();
+      async pesquisar(name){ // pesquisar por nome
+        await ProdutoApi.pesquisarNome(name).then(response =>{
+          console.log(response.data);
            
           }).catch((error) =>{
               alert('Não tem produtos com esse nome' + error)

@@ -4,7 +4,7 @@
     <div class="cont">
         <span><strong>Detalhe do Produto</strong> </span> 
         <div class="form">
-          <form @submit.prevent="salvar">
+          <form @submit="salvar">
             
               <div class="inputName">
                   <label>Nome</label><br>
@@ -63,32 +63,12 @@
 </template>
 
 <script>
-import Produto from '../services/produtos'
+/* import ProdutoApi   from '../services/produtos' */
 
 export default {
     name: "Modal",
-    props: ['produto', 'produtos', 'listar'],
+    props: ['produto', 'produtos', 'listar', 'salvar'],
 
-  methods:{
-        async salvar(){
-          if(this.produto.name != '' || this.produto.categoria != '' || this.produto.status != '' || this.produto.price > 0){
-            await Produto.salvar(this.produto).then(response =>{
-              console.log(response)
-              this.produto = {} 
-              alert("Salvo com Sucesso")
-              window.location.reload();
-              this.listar() 
-            }).catch((error)=>{
-              alert('Nenhum Campo pode ser nulo' + error)
-              console.log(this.produto)
-            })
-          
-           }else{
-            alert('Nenhum campo pode ser nulo') //fazer validação no back
-          }  
-          
-        },  
-  }
         
 }
 </script>

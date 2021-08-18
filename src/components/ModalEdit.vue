@@ -1,11 +1,10 @@
 <template>
-  <div class="modal">
+  <div class="modalEdit">
       
     <div class="cont">
         <span><strong>Detalhe do Produto</strong> </span> 
         <div class="form">
-          <form @submit.prevent="atualizar">
-
+          <form >
             <input type="number" v-model="produto.id">
             
               <div class="inputName">
@@ -55,7 +54,7 @@
             <div class="btnModal">
               
               <button @click="$emit(`close`)" class= "close">Voltar</button>
-              <button class="salvarModal">  +Salvar </button> 
+              <button @click.prevent ='atualizar' class="salvarModal">  +Salvar </button> 
             </div>  
           </form>  
         </div>
@@ -65,33 +64,60 @@
 </template>
 
 <script>
-import Produto from '../services/produtos'
-
+/* import ProdutoApi from '../services/produtos' */
 export default {
-  props:['produto', 'produtos', 'produto.id','editar'],
+  name: 'ModalEdit',
+  props:['produto', 'produtos', 'atualizar' ],
+
+  
+  
+  watch:{
+    produto(newValue){
+      this.$emit('up-produto', newValue)
+    }
+  },
   
     
   methods:{
-   async atualizar(){
-        
-         await Produto.atualizar(this.produto).then(response =>{
+   addProduto(){
+      let newProduto = this.produto;
+      newProduto = {
+        idEdit: this.produto.id,
+        nameEdit: this.produto.name,
+        priceEdit: this.produto.price,
+        codEdit: this.produto.cod,
+        statusEdit: this.produto.status,
+        categoriaEdit: this.produto.categoria,
+      };
+      this.$emit('update-produto',newProduto)
+      /* ProdutoApi.atualizar(newProduto).then(response =>{
+        this.produto.id = response.data
+        console.log(response)
+        alert('atualizado com sucesso')
+      }).catch((error)=>{
+        console.log(error + 'nao entrou')
+      }) */
+      
+    },
+  /* async atualizar(){
+         await ProdutoApi.atualizar(this.produto).then(response =>{ 
+            this.produto.id = response.data.id;
             console.log(response)
-            this.produto = {} 
+            console.log(this['produto.id'])
             alert("Atualizado com Sucesso")
-            this.listar() 
+            window.location.reload();
           }).catch((error)=>{
             alert('gerou erro:' + error)
             console.log(this.produto)
-            console.log(this.editar)
           }) 
-    }
+    } */
   }
         
 }
 </script>
 
 <style scoped>
-.modal{
+.modalEdit{
     position: fixed;
     top: 0;
     right: 0;
@@ -101,7 +127,7 @@ export default {
     z-index: 999;
     color: #121212;
 }
-.modal .cont{
+.modalEdit .cont{
     position: fixed;
     max-width: 500px;
     top: 4vh;
